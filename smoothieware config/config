@@ -2,7 +2,6 @@
 default_feed_rate                            2400             # Default rate ( mm/minute ) for G1/G2/G3 moves
 default_seek_rate                            2400             # Default rate ( mm/minute ) for G0 moves
 mm_per_arc_segment                           0.5              # Arcs are cut into segments ( lines ), this is the length for these segments.  Smaller values mean more resolution, higher values mean faster computation
-#mm_per_line_segment                          5                # Lines can be cut into segments ( not usefull with cartesian coordinates robots ).
 
 # Arm solution configuration : Cartesian robot. Translates mm positions into stepper positions
 # mm/s cr10 speeds
@@ -258,7 +257,7 @@ beta_min_endstop                             1.25            #
 beta_homing_direction                        home_to_min      #
 beta_min                                     0                #
 beta_max                                     200              #
-gamma_min_endstop                            1.26!            #
+gamma_min_endstop                            1.26            #
 #gamma_max_endstop                           1.29!            #
 gamma_homing_direction                       home_to_min      #
 gamma_min                                    0                #
