@@ -2,6 +2,7 @@
 default_feed_rate                            2400             # Default rate ( mm/minute ) for G1/G2/G3 moves
 default_seek_rate                            2400             # Default rate ( mm/minute ) for G0 moves
 mm_per_arc_segment                           0.5              # Arcs are cut into segments ( lines ), this is the length for these segments.  Smaller values mean more resolution, higher values mean faster computation
+mm_max_arc_error                             0.01             # The maximum error for line segments that divide arcs 0 to disable
 
 # Arm solution configuration : Cartesian robot. Translates mm positions into stepper positions
 # mm/s cr10 speeds
@@ -10,35 +11,35 @@ beta_steps_per_mm                            160               # Steps per mm fo
 gamma_steps_per_mm                           3200        # Steps per mm for gamma stepper
 
 # Standard bed size for CR-10
-alpha_max_travel                             300             	# max movement in X
-beta_max_travel                              300            	# max movement in Y
-gamma_max_travel                             400             	# max movement in Z
+###alpha_max_travel                             300             	# max movement in X
+###beta_max_travel                              300            	# max movement in Y
+###gamma_max_travel                             400             	# max movement in Z
 
 # Planner module configuration : Look-ahead and acceleration configuration
-planner_queue_size                           32               # DO NOT CHANGE THIS UNLESS YOU KNOW EXACTLY WHAT YOUR ARE DOING
 acceleration                                 3000             # Acceleration in mm/second/second.
 #z_acceleration                               500              # Acceleration for Z only moves in mm/s^2, 0 disables it, disabled by default. DO NOT SET ON A DELTA
-acceleration_ticks_per_second                1000             # Number of times per second the speed is updated
 junction_deviation                           0.05             # Similar to the old "max_jerk", in millimeters, see : https://github.com/grbl/grbl/blob/master/planner.c#L409
-															  # and https://github.com/grbl/grbl/wiki/Configuring-Grbl-v0.8 . Lower values mean being more careful, higher values means being faster and have more jerk
+#z_junction_deviation                        0.0              # For Z only moves, -1 uses junction_deviation, zero disables junction_deviation on z moves DO NOT SET ON A DELTA
 
 # Stepper module configuration
-microseconds_per_step_pulse                  1                # Duration of step pulses to stepper drivers, in microseconds
-base_stepping_frequency                      100000           # Base frequency for stepping
+###microseconds_per_step_pulse                  1                # Duration of step pulses to stepper drivers, in microseconds
+###base_stepping_frequency                      100000           # Base frequency for stepping
+
+x_axis_max_speed                             12000            # Maximum speed in mm/min
+y_axis_max_speed                             12000            # Maximum speed in mm/min
+z_axis_max_speed                             150              # Maximum speed in mm/min
 
 # Stepper module pins ( ports, and pin numbers, appending "!" to the number will invert a pin )
 alpha_step_pin                               2.1              # Pin for alpha stepper step signal
 alpha_dir_pin                                0.11             # Pin for alpha stepper direction
 alpha_en_pin                                 nc               # Pin for alpha enable pin 0.10
 alpha_current                                1.1              # X stepper motor current
-x_axis_max_speed                             12000            # mm/min
 alpha_max_rate                               12000.0          # mm/min actuator max speed
 
 beta_step_pin                                2.2              # Pin for beta stepper step signal
 beta_dir_pin                                 0.20             # Pin for beta stepper direction
 beta_en_pin                                  nc             # Pin for beta enable
 beta_current                                 1.1              # Y stepper motor current
-y_axis_max_speed                             12000            # mm/min
 beta_max_rate                                12000.0          # mm/min actuator max speed
 
 #gamma_step_pin                               2.3              # Pin for gamma stepper step signal
@@ -47,8 +48,66 @@ gamma_step_pin                               2.0              # Pin for gamma st
 gamma_dir_pin                                0.5!             # Pin for gamma stepper direction
 gamma_en_pin                                 nc             # Pin for gamma enable
 gamma_current                                1.2              # Z stepper motor current
-z_axis_max_speed                             150              # mm/min
 gamma_max_rate                               150.0            # mm/min actuator max speed
+
+# Extruder module configuration
+extruder.hotend.enable                          true             # Whether to activate the extruder module at all. All configuration is ignored if false
+extruder.hotend.steps_per_mm                    830              # Steps per mm for extruder stepper
+extruder.hotend.default_feed_rate               600              # Default rate ( mm/minute ) for moves where only the extruder moves
+extruder.hotend.acceleration                    500              # Acceleration for the stepper motor mm/sec²
+extruder.hotend.max_speed                       50               # mm/s
+
+#extruder.hotend.step_pin                        2.0              # Pin for extruder step signal
+#extruder.hotend.dir_pin                         0.5             # Pin for extruder dir signal
+extruder.hotend.step_pin                        2.3              # Pin for extruder step signal
+extruder.hotend.dir_pin                         0.22             # Pin for extruder dir signal
+extruder.hotend.en_pin                          nc               # Pin for extruder enable signal
+
+# extruder offset
+extruder.hotend.x_offset                        0                # x offset from origin in mm
+extruder.hotend.y_offset                        0                # y offset from origin in mm
+extruder.hotend.z_offset                        0                # z offset from origin in mm
+
+# firmware retract settings when using G10/G11, these are the defaults if not defined, must be defined for each extruder if not using the defaults
+#extruder.hotend.retract_length                  3               # retract length in mm
+#extruder.hotend.retract_feedrate                45              # retract feedrate in mm/sec
+#extruder.hotend.retract_recover_length          0               # additional length for recover
+#extruder.hotend.retract_recover_feedrate        8               # recover feedrate in mm/sec (should be less than retract feedrate)
+#extruder.hotend.retract_zlift_length            0               # zlift on retract in mm, 0 disables
+#extruder.hotend.retract_zlift_feedrate          6000            # zlift feedrate in mm/min (Note mm/min NOT mm/sec)
+
+delta_current                                1.0              # Extruder stepper motor current
+
+# Second extruder module configuration
+#extruder.hotend2.enable                         true         # Whether to activate the extruder module at all. All configuration is ignored if false
+#extruder.hotend2.steps_per_mm                   140          # Steps per mm for extruder stepper
+#extruder.hotend2.default_feed_rate              600          # Default rate ( mm/minute ) for moves where only the extruder moves
+#extruder.hotend2.acceleration                   500          # Acceleration for the stepper motor, as of 0.6, arbitrary ratio
+#extruder.hotend2.max_speed                      50           # mm/s
+
+#extruder.hotend2.step_pin                       2.8          # Pin for extruder step signal
+#extruder.hotend2.dir_pin                        2.13         # Pin for extruder dir signal ( add '!' to reverse direction )
+#extruder.hotend2.en_pin                         4.29         # Pin for extruder enable signal
+
+#extruder.hotend2.x_offset                       0            # x offset from origin in mm
+#extruder.hotend2.y_offset                       25.0         # y offset from origin in mm
+#extruder.hotend2.z_offset                       0            # z offset from origin in mm
+
+#epsilon_current                                 1.5          # Second extruder stepper motor current
+
+## Laser module configuration
+# See http://smoothieware.org/laser
+laser_module_enable                           false           # Whether to activate the laser module at all
+laser_module_pwm_pin                          2.5             # This pin will be PWMed to control the laser.
+                                                              # Only pins 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 1.18, 1.20, 1.21, 1.23, 1.24, 1.26, 3.25 and 3.26
+                                                              # can be used since laser requires hardware PWM, see http://smoothieware.org/pinout
+#laser_module_ttl_pin 	                      1.30            # This pin turns on when the laser turns on, and off when the laser turns off.
+#laser_module_maximum_power                   1.0             # This is the maximum duty cycle that will be applied to the laser
+#laser_module_minimum_power                   0.0             # This is a value just below the minimum duty cycle that keeps the laser
+                                                              # active without actually burning.
+#laser_module_default_power                   0.8             # This is the default laser power that will be used for cuts if a power has not been specified.  The value is a scale between
+                                                              # the maximum and minimum power levels specified above
+#laser_module_pwm_period                      20              # This sets the pwm frequency as the period in microseconds
 
 # bigfoot BSD2660 settings
 motor_driver_control.alpha.enable           true              # alpha (X) is a TMC26X
@@ -90,9 +149,6 @@ motor_driver_control.gamma.spi_channel       0                # SPI channel 1 is
 motor_driver_control.gamma.spi_cs_pin        0.4             # SPI CS pin
 motor_driver_control.gamma.sense_resistor     100             # set the sense resistor used
 
-
-delta_current                                1.0              # Extruder stepper motor current
-
 motor_driver_control.delta.enable           true              # delta (E1) is a TMC26X
 motor_driver_control.delta.designator       A                 # D to set the settings
 motor_driver_control.delta.chip             TMC2660           # chip name
@@ -109,8 +165,6 @@ motor_driver_control.delta.spi_cs_pin        0.21             # SPI CS pin DRV87
 motor_driver_control.delta.sense_resistor     100             # set the sense resistor used.
 
 # Epsilon pins disabled as E1 & E2 are driven in sync
-epsilon_current                               1.0              # Second extruder stepper motor current
-
 motor_driver_control.epsilon.enable           true              # epsilon (E2) is a TMC26X
 motor_driver_control.epsilon.designator       B                 # E to set the settings
 motor_driver_control.epsilon.chip             TMC2660           # chip name
@@ -129,31 +183,6 @@ second_usb_serial_enable                     false            # This enables a s
 #msd_disable                                 false            # disable the MSD (USB SDCARD) when set to true
 
 
-# Extruder module configuration
-extruder.hotend.enable                          true             # Whether to activate the extruder module at all. All configuration is ignored if false
-extruder.hotend.steps_per_mm                    140              # Steps per mm for extruder stepper
-extruder.hotend.default_feed_rate               600              # Default rate ( mm/minute ) for moves where only the extruder moves
-extruder.hotend.acceleration                    500              # Acceleration for the stepper motor mm/sec²
-extruder.hotend.max_speed                       50               # mm/s
-
-#extruder.hotend.step_pin                        2.0              # Pin for extruder step signal
-#extruder.hotend.dir_pin                         0.5             # Pin for extruder dir signal
-extruder.hotend.step_pin                        2.3              # Pin for extruder step signal
-extruder.hotend.dir_pin                         0.22             # Pin for extruder dir signal
-extruder.hotend.en_pin                          nc             # Pin for extruder enable signal
-
-# extruder offset
-extruder.hotend.x_offset                        0                # x offset from origin in mm
-extruder.hotend.y_offset                        0                # y offset from origin in mm
-extruder.hotend.z_offset                        0                # z offset from origin in mm
-
-# firmware retract settings when using G10/G11, these are the defaults if not defined, must be defined for each extruder if not using the defaults
-#extruder.hotend.retract_length                  3               # retract length in mm
-#extruder.hotend.retract_feedrate                45              # retract feedrate in mm/sec
-#extruder.hotend.retract_recover_length          0               # additional length for recover
-#extruder.hotend.retract_recover_feedrate        8               # recover feedrate in mm/sec (should be less than retract feedrate)
-#extruder.hotend.retract_zlift_length            0               # zlift on retract in mm, 0 disables
-#extruder.hotend.retract_zlift_feedrate          6000            # zlift feedrate in mm/min (Note mm/min NOT mm/sec)
 
 
 # Hotend temperature control configuration
@@ -183,9 +212,9 @@ temperature_control.bed.set_m_code           140              #
 temperature_control.bed.set_and_wait_m_code  190              #
 temperature_control.bed.designator           B                #
 
-temperature_control.bed.p_factor          221.5             #
-temperature_control.bed.i_factor          12.102            #
-temperature_control.bed.d_factor          1013               #
+temperature_control.bed.p_factor          192.0             #
+temperature_control.bed.i_factor          9.626            #
+temperature_control.bed.d_factor          958               #
 
 #temperature_control.bed.max_pwm             64               # max pwm, 64 is a good value if driving a 12v resistor with 24v.
 
@@ -230,7 +259,7 @@ zprobe.probe_pin                             1.26^          # pin probe is attac
 zprobe.slow_feedrate                         10             # mm/sec probe feed rate
 #zprobe.debounce_count                       100            # set if noisy
 zprobe.fast_feedrate                         30             # move feedrate mm/sec
-zprobe.probe_height                          10             # how much above bed to start probe
+zprobe.probe_height                          5             # how much above bed to start probe
 
 #probe endstop
 probe_pin                                   1.26              # optional pin for probe
@@ -247,12 +276,12 @@ switch.servo.pwm_period_ms                     20             # set period to 20
 leveling-strategy.rectangular-grid.enable               true     # The strategy must be enabled in the config, as well as the zprobe module.
 leveling-strategy.rectangular-grid.x_size               250       # 75 size of bed in the X axis
 leveling-strategy.rectangular-grid.y_size               250       # 50 size of bed in the Y axis
-leveling-strategy.rectangular-grid.do_home              true     # home before probing
-leveling-strategy.rectangular-grid.size                 7 	     # The size of the grid, for example, 7 causes a 7x7 grid with 49 points. 
+leveling-strategy.rectangular-grid.do_home              false     # home before probing
+leveling-strategy.rectangular-grid.size                 3 	     # The size of the grid, for example, 7 causes a 7x7 grid with 49 points. 
                                                                  # Must be an odd number.
 leveling-strategy.rectangular-grid.probe_offsets        -50,-50,0  # Optional probe offsets from the nozzle or tool head
-leveling-strategy.rectangular-grid.save                 false    # If the saved grid is to be loaded on boot then this must be set to true
-leveling-strategy.rectangular-grid.initial_height       10       # will move to Z10 before the first probe
+leveling-strategy.rectangular-grid.save                 true    # If the saved grid is to be loaded on boot then this must be set to true
+leveling-strategy.rectangular-grid.initial_height       5       # will move to Z10 before the first probe
 mm_per_line_segment 1                                            # necessary for cartesians using rectangular-grid
 
 # Endstops
